@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8'>
+  <title>Theos DNS</title>
+  <style>
+    html {
+      font-family: Helvetica, sans-serif;
+      display: inline-block;
+      margin: 0 auto;
+      text-align: center;
+      color: #a9a9a9;
+    }
+
+    body {
+      font-size: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #222222;
+      overflow-x: hidden;
+    }
+
+    h1 {
+      color: #a9a9a9;
+      margin: 50px auto 30px;
+    }
+
+    h3 {
+      color: #a9a9a9;
+      margin-bottom: 50px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 10px;
+    }
+
+    .button {
+      display: block;
+      width: 200px;
+      height: 3rem;
+      background-color: #F3A423;
+      border: none;
+      color: white;
+      padding: 13px 30px;
+      text-decoration: none;
+      font-size: 1rem;
+      /*margin: 0 auto 35px;*/
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    input[type=text] {
+      border: 2px solid #aaa;
+      border-radius: 4px;
+      margin: 8px 0;
+      outline: none;
+      padding: 8px;
+      box-sizing: border-box;
+      transition: .3s;
+      background: #222222;
+      color: #a9a9a9;
+      font-size: 1.5rem;
+      max-width: 500px;
+      width: 500px;
+    }
+
+    input[type=text]:focus {
+      border-color: #F3A423;
+      box-shadow: 0 0 8px 0 #F3A423;
+
+      label {
+        color: #F3A423 !important;
+      }
+    }
+
+    .content-center-row:focus-within {
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .content-center-row:focus-within {
+      label {
+        color: #F3A423 !important;
+      }
+    }
+
+    label {
+      white-space: nowrap;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .space-x-4 > * {
+      margin-right: 1rem;
+    }
+
+    a {
+      color: #1abc9c;
+    }
+
+  </style>
+</head>
+<body>
+
+<h1>Theos DNS</h1>
+
+<h3>
+  <span>Support: </span>
+  <a target='_blank' href='https://t.me/theos_dns'>@theos_dns</a>
+</h3>
+<div style='width: 75%; margin-bottom: 100px; display: flex; flex-direction: column; gap: 2rem'>
+  <section style="display: flex; flex-direction: row; justify-content: space-between; align-items: center">
+    <div class='content-center-row space-x-4' style='margin-bottom: 10px'>
+      <label for='share_link'>Share Link:</label>
+      <input id='share_link' type='text'>
+    </div>
+    <button class='button' onclick='onParseLink()'>parse link</button>
+  </section>
+
+  <section>
+    <div style="display: flex; flex-direction: row; justify-content: space-between; gap: 1rem">
+      <div class='content-center-row space-x-4' style='margin-bottom: 10px'>
+        <label for='auth_server'>Auth Server:</label>
+        <input id='auth_server' type='text' placeholder='111.111.111.111:22' required>
+      </div>
+      <div class='content-center-row space-x-4' style='margin-bottom: 10px'>
+        <label for='whoami_server'>Whoami Server:</label>
+        <input id='whoami_server' type='text' placeholder='111.111.111.111:23' required>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: row; justify-content: space-between; gap: 1rem">
+      <div class='content-center-row space-x-4' style='margin-bottom: 10px'>
+        <label for='coap_server'>DOH Server:</label>
+        <input id='coap_server' type='text' placeholder='111.111.111.111:24' required>
+      </div>
+      <div class='content-center-row space-x-4' style='margin-bottom: 10px'>
+        <label for='token'>Token:</label>
+        <input id='token' type='text' placeholder='xxxx xxxx xxxx xxxx' required>
+      </div>
+    </div>
+  </section>
+</div>
+<button class='button' onclick='onSubmit()'>Submit</button>
+
+
+<script>
+  function onParseLink() {
+    if (document.getElementById('share_link').value?.split('@#@').length === 4) {
+      [
+        document.getElementById('auth_server').value,
+        document.getElementById('whoami_server').value,
+        document.getElementById('coap_server').value,
+        document.getElementById('token').value,
+      ] = document.getElementById('share_link').value?.split('@#@')
+    } else {
+      alert("Enter your share link correctly!")
+    }
+  }
+
+  function onSubmit() {
+    let formData = new FormData();
+    formData.append('serverAuth', document.getElementById('auth_server').value);
+    formData.append('serverWhoami', document.getElementById('whoami_server').value);
+    formData.append('serverCoap', document.getElementById('coap_server').value);
+    formData.append('token', document.getElementById('token').value);
+
+
+    fetch('/saveSettings', {
+      method: 'POST',
+      body: formData
+    }).then((res) => {
+      res.text().then(result => {
+        alert(result);
+        if (result === 'ok') {
+          document.body.innerHTML = 'Ok';
+        }
+      })
+    });
+  }
+</script>
+
+</body>
+</html>
+
