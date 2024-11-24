@@ -1,37 +1,38 @@
 const {app, BrowserWindow} = require('electron/main')
+const fs = require("node:fs")
 
 function createWindow() {
-	const w = new BrowserWindow({
-		width: 800,
-		height: 600,
-	})
+  const w = new BrowserWindow({
+    width: 1366,
+    height: 850,
+  })
 
-	w.loadFile('page/main.html').then()
+  w.loadFile('page/main.html').then()
   w.setMenu(null)
 }
 
 app.whenReady().then(() => {
-	createWindow()
-  readIni()
+  createWindow()
+  // getCoresList()
+  // readIniConfig()
+  // genSingBoxConf()
 
-	app.on('activate', () => {
-		if (BrowserWindow.getAllWindows().length === 0) {
-			createWindow()
-		}
-	})
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow()
+    }
+  })
 })
 
 app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') {
-		app.quit()
-	}
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
 })
 
-const readIni = async function () {
-  const fs = require("node:fs")
-
+const readIniConfig = function () {
   let data
-  await fs.readFile("./config.ini", (err, res) => {
+  fs.readFile("./config.ini", (err, res) => {
     if (!err && !!res) {
       data = res.toString()
 
@@ -61,10 +62,37 @@ const readIni = async function () {
           section = null;
         }
       });
-      if (typeof document !== 'undefined') {
-        document.getElementById("support").value = value.tel_channel.title
-      }
-      console.log(2, value);
+      console.log('INI =>', value);
+    }
+  })
+}
+
+const getCoresList = function () {
+  let coresList = []
+
+  fs.readdir("./tun", (err, dirs) => {
+    if (!!err && !!err.code) {
+      console.error(err.code, err.message)
+    }
+    if (dirs.length > 0) {
+      coresList = dirs
+      console.log("Cores =>", coresList);
+    }
+  })
+}
+
+const genSingBoxConf = function () {
+  fs.readFile("./tun/sing-box/config-template.json", (err, data) => {
+    if (!!err && !!err.code) {
+      console.error(err.code, err.message)
+    }
+    if (!!data.length > 0) {
+      const newData = data.toString().replaceAll("{$DOH_SERVER}", "aaaa")
+      fs.writeFile("./tun/sing-box/config.json", newData, (e) => {
+        if (!!e && !!e.code) {
+          console.error(e.code, e.message)
+        }
+      })
     }
   })
 }
