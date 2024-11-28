@@ -45,7 +45,7 @@ if (!gotTheLock) {
   })
 
   app.whenReady().then(async () => {
-    let configIniText = await fs.readFile(path.join(__dirname, './config.ini'),{encoding : 'utf-8'})
+    let configIniText = await fs.readFile(path.join(__dirname, 'config.ini'),{encoding : 'utf-8'})
     CONFIGS = Ini.parse(configIniText)
 
     autoUpdater.autoDownload = true
@@ -138,7 +138,7 @@ async function createMainWindow() {
 app.on('activate', async function () {
 
   // load ini configs
-  let configIniText = await fs.readFile(path.join(__dirname, './config.ini'),{encoding : 'utf-8'})
+  let configIniText = await fs.readFile(path.join(__dirname, 'config.ini'),{encoding : 'utf-8'})
   CONFIGS = Ini.parse(configIniText)
   console.log(CONFIGS);
 
