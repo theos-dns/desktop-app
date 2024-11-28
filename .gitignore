@@ -2,6 +2,8 @@
 .env
 /node_modules
 
+/dist
+
 #configs
 *.env
 *.ini
