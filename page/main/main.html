@@ -125,7 +125,9 @@
     <ul id="cores_list" class="dropdown-menu"></ul>
   </div>
 
-
+  <div style="display: none" id="core_installing">
+    <i18n>installingCore</i18n>
+  </div>
 </div>
 
 
@@ -186,7 +188,15 @@
       list.push(li)
     }
     document.getElementById("cores_list").replaceChildren(...list)
+  })
 
+  window.api.tunCoreSelectedStatus((event, status) => {
+    if (status === "installing"){
+      document.getElementById("core_installing").style.display = "block"
+    }else {
+      document.getElementById("core_selected").innerHTML = status
+      document.getElementById("core_installing").style.display = "none"
+    }
   })
 
 

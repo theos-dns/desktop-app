@@ -163,7 +163,16 @@ ipcMain.on("main:selectCore", async (event, {core}) => {
     sys = "linux"
   }
 
-  tunCoreInstall(core, sys)
+  const result = tunCoreInstall(core, sys)
+  if (result.isInstalled){
+    console.log("core is installed")
+    mainWindow.webContents.send('main:tunCoreSelectedStatus', core);
+  }
+  if (result.isInstalling){
+    console.log("core is installing...")
+    mainWindow.webContents.send('main:tunCoreSelectedStatus', "installing");
+  }
+
 })
 
 

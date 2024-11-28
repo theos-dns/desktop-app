@@ -6,16 +6,16 @@ module.exports = function installCore (core, platform) {
     case "linux":
       const installLinux = require(path.join(__dirname, `./${core}/install/linux`))
       if(installLinux.isInstalled()){
-        return false
+        return {isInstalled: true, isInstalling: false, supportsOs: true}
       }
       installLinux.install()
-      return true;
+      return {isInstalled: false, isInstalling: true, supportsOs: true};
     case "windows":
       const installWindows = require(path.join(__dirname, `./${core}/install/windows`))
       if(installWindows.isInstalled()){
-        return false
+        return {isInstalled: true, isInstalling: false, supportsOs: true};
       }
       installWindows.install()
-      return true;
+      return {isInstalled: false, isInstalling: true, supportsOs: true};
   }
 }

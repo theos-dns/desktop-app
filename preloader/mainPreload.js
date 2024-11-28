@@ -10,6 +10,9 @@ contextBridge.exposeInMainWorld("api", {
   tunCores: function(func){
     ipcRenderer.on("main:tunCores", (event,cores) => func(event, cores));
   },
+  tunCoreSelectedStatus: function(func){
+    ipcRenderer.on("main:tunCoreSelectedStatus", (event,status) => func(event, status));
+  },
   i18nJson: function(func){
     ipcRenderer.on("main:i18nJson", (event,json) => func(event, json));
   },
