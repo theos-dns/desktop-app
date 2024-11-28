@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html lang='en'>
+<html lang='en' data-bs-theme="dark">
 <head>
   <meta charset='UTF-8'>
   <title>Theos DNS</title>
+  <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <script src="../bootstrap/js/bootstrap.bundle.min.js"></script>
+
   <style>
     html {
       font-family: Helvetica, sans-serif;
@@ -113,6 +116,21 @@
   <span>Support: </span>
   <a target='_blank' href='https://t.me/theos_dns'>@theos_dns</a>
 </h3>
+<div>
+
+  <div class="dropdown">
+    <button id="core_selected"  class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i18n>selectCore</i18n>
+    </button>
+    <ul id="cores_list" class="dropdown-menu"></ul>
+  </div>
+
+
+</div>
+
+
+
+
 <div style='width: 75%; margin-bottom: 100px; display: flex; flex-direction: column; gap: 2rem'>
   <section style="display: flex; flex-direction: row; justify-content: space-between; align-items: center">
     <div class='content-center-row space-x-4' style='margin-bottom: 10px'>
@@ -150,6 +168,28 @@
 
 
 <script>
+  function onSelectCore(e) {
+    window.api.selectCore({core: this.innerText})
+  }
+
+
+  window.api.tunCores((event, cores) => {
+    const list = []
+    for (const core of cores) {
+      const a = document.createElement("a")
+      a.href = "#"
+      a.innerText = core
+      a.classList.add('dropdown-item')
+      const li = document.createElement("li")
+      li.addEventListener('click',onSelectCore)
+      li.appendChild(a)
+      list.push(li)
+    }
+    document.getElementById("cores_list").replaceChildren(...list)
+
+  })
+
+
   function onParseLink() {
     if (document.getElementById('share_link').value?.split('@#@').length === 4) {
       [
@@ -164,26 +204,20 @@
   }
 
   function onSubmit() {
-    let formData = new FormData();
-    formData.append('serverAuth', document.getElementById('auth_server').value);
-    formData.append('serverWhoami', document.getElementById('whoami_server').value);
-    formData.append('serverCoap', document.getElementById('coap_server').value);
-    formData.append('token', document.getElementById('token').value);
-
-
-    fetch('/saveSettings', {
-      method: 'POST',
-      body: formData
-    }).then((res) => {
-      res.text().then(result => {
-        alert(result);
-        if (result === 'ok') {
-          document.body.innerHTML = 'Ok';
-        }
-      })
-    });
   }
 </script>
+
+
+<script>
+
+  // replace i18n tags with translation
+  window.api.i18nJson((event, json) => {
+    for (const item of document.getElementsByTagName("i18n")) {
+      item.innerText = json[item.innerText]
+    }
+  })
+</script>
+
 
 </body>
 </html>

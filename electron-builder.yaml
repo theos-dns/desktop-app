@@ -26,7 +26,7 @@ win:
   icon: assets/icon.ico
 
 
-asarUnpack: ["**/*.+(node|dll|exe|wav)","**/node_modules/pdf-to-printer/*"]
+asarUnpack: ["**/*.+(node|dll|exe|wav)"]
 
 files:
   filter: [
