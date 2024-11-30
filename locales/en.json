@@ -3,6 +3,13 @@
   "title": "Title",
   "open": "Open",
   "exit": "exit",
-  "selectCore": "selecting core",
-  "installingCore": "Installing core, Please wait..."
+  "selectCore": "Selecting core",
+  "installingCore": "Installing core, Please wait...",
+  "shareLink": "Share Link",
+  "authServer": "Auth Server",
+  "whoamiServer": "Whoami Server",
+  "dohServer": "DOH Server",
+  "token": "Token",
+  "submit": "Submit",
+  "parseLink": "Parse Link"
 }

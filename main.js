@@ -1,13 +1,15 @@
-const {app, Menu, Tray, dialog, globalShortcut, ipcMain, BrowserWindow} = require('electron/main')
+const {app, Menu, Tray, globalShortcut, ipcMain, BrowserWindow} = require('electron/main')
 const fs = require("node:fs/promises")
 const path = require("path");
 const log = require('electron-log/main');
+const Store = require("electron-store")
 const {autoUpdater} = require("electron-updater")
 const { I18n } = require('i18n')
 const Ini = require("ini")
 const {getCores} = require("./utils");
 const os = require('os');
 const tunCoreInstall = require("./tun/installCore")
+const {STORE_TUN_CORE} = require("./consts");
 
 log.initialize();
 log.info('start logging...');
@@ -19,6 +21,8 @@ const i18n = new I18n({
   retryInDefaultLocale: true,
   directory: path.join(__dirname, 'locales')
 })
+
+const  store = new Store();
 
 // ------------------- global vars ------------------------
 let CONFIGS = null
@@ -35,7 +39,7 @@ const gotTheLock = app.requestSingleInstanceLock(additionalData)
 if (!gotTheLock) {
   app.quit()
 } else {
-  app.on('second-instance', (event, commandLine, workingDirectory, additionalData) => {
+  app.on('second-instance', () => {
     // Someone tried to run a second instance, we should focus our window.
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore()
@@ -124,6 +128,9 @@ async function createMainWindow() {
     const cores = await getCores()
     mainWindow.webContents.send('main:tunCores', cores)
 
+
+    setSettings()
+
   })
 
   globalShortcut.register('f5', function () {
@@ -152,6 +159,13 @@ const closeApp = () => {
 }
 
 
+const setSettings = () => {
+
+  // tun core:
+  mainWindow.webContents.send('main:tunCoreSelectedStatus', store.get(STORE_TUN_CORE, "NOT_SET"));
+}
+
+
 // ------------------- ipc messages ------------------------
 ipcMain.on("main:selectCore", async (event, {core}) => {
   let sys = os.platform();
@@ -167,6 +181,7 @@ ipcMain.on("main:selectCore", async (event, {core}) => {
   if (result.isInstalled){
     console.log("core is installed")
     mainWindow.webContents.send('main:tunCoreSelectedStatus', core);
+    store.set(STORE_TUN_CORE, core);
   }
   if (result.isInstalling){
     console.log("core is installing...")

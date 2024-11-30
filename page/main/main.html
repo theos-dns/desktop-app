@@ -83,7 +83,7 @@
     }
 
     .content-center-row:focus-within {
-      label {
+      & label {
         color: #F3A423;
       }
     }
@@ -116,7 +116,9 @@
   <span>Support: </span>
   <a target='_blank' href='https://t.me/theos_dns'>@theos_dns</a>
 </h3>
-<div>
+<div class="flex-row d-flex align-items-center">
+
+  <div class="fs-5 px-2"><i18n>selectCore</i18n>: </div>
 
   <div class="dropdown">
     <button id="core_selected"  class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -136,41 +138,41 @@
 <div style='width: 75%; margin-bottom: 100px; display: flex; flex-direction: column; gap: 2rem'>
   <section style="display: flex; flex-direction: row; justify-content: space-between; align-items: center">
     <div class='content-center-row space-x-4' style='margin-bottom: 10px'>
-      <label for='share_link'>Share Link:</label>
+      <label for='share_link'><i18n>shareLink</i18n>:</label>
       <input id='share_link' type='text'>
     </div>
-    <button class='button' onclick='onParseLink()'>parse link</button>
+    <button class='button' onclick='onParseLink()'><i18n>parseLink</i18n></button>
   </section>
 
   <section>
     <div style="display: flex; flex-direction: row; justify-content: space-between; gap: 1rem">
       <div class='content-center-row space-x-4' style='margin-bottom: 10px'>
-        <label for='auth_server'>Auth Server:</label>
+        <label for='auth_server'><i18n>authServer</i18n>:</label>
         <input id='auth_server' type='text' placeholder='111.111.111.111:22' required>
       </div>
       <div class='content-center-row space-x-4' style='margin-bottom: 10px'>
-        <label for='whoami_server'>Whoami Server:</label>
+        <label for='whoami_server'><i18n>whoamiServer</i18n>:</label>
         <input id='whoami_server' type='text' placeholder='111.111.111.111:23' required>
       </div>
     </div>
 
     <div style="display: flex; flex-direction: row; justify-content: space-between; gap: 1rem">
       <div class='content-center-row space-x-4' style='margin-bottom: 10px'>
-        <label for='coap_server'>DOH Server:</label>
-        <input id='coap_server' type='text' placeholder='111.111.111.111:24' required>
+        <label for='doh_server'><i18n>dohServer</i18n>:</label>
+        <input id='doh_server' type='text' placeholder='111.111.111.111:24' required>
       </div>
       <div class='content-center-row space-x-4' style='margin-bottom: 10px'>
-        <label for='token'>Token:</label>
+        <label for='token'><i18n>token</i18n>:</label>
         <input id='token' type='text' placeholder='xxxx xxxx xxxx xxxx' required>
       </div>
     </div>
   </section>
 </div>
-<button class='button' onclick='onSubmit()'>Submit</button>
+<button class='button' onclick='onSubmit()'><i18n>submit</i18n></button>
 
 
 <script>
-  function onSelectCore(e) {
+  function onSelectCore() {
     window.api.selectCore({core: this.innerText})
   }
 
@@ -191,9 +193,11 @@
   })
 
   window.api.tunCoreSelectedStatus((event, status) => {
-    if (status === "installing"){
+    if (status === "NOT_SET"){
+      console.log("core not set")
+    }else if(status === "installing"){
       document.getElementById("core_installing").style.display = "block"
-    }else {
+    } else{
       document.getElementById("core_selected").innerHTML = status
       document.getElementById("core_installing").style.display = "none"
     }
@@ -205,7 +209,7 @@
       [
         document.getElementById('auth_server').value,
         document.getElementById('whoami_server').value,
-        document.getElementById('coap_server').value,
+        document.getElementById('doh_server').value,
         document.getElementById('token').value,
       ] = document.getElementById('share_link').value?.split('@#@')
     } else {
@@ -214,6 +218,17 @@
   }
 
   function onSubmit() {
+    const authServer = document.getElementById('auth_server').value
+    const whoamiServer = document.getElementById('whoami_server').value
+    const dohServer = document.getElementById('doh_server').value
+    const token = document.getElementById('token').value
+
+    if(authServer.length < 3 || whoamiServer.length < 3 || dohServer.length < 3 || token.length < 1){
+      alert("fill filed before submitting!")
+      return;
+    }
+
+    window.api.submitData({authServer, whoamiServer, dohServer, token})
   }
 </script>
 
