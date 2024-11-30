@@ -7,8 +7,8 @@ const path = require("path");
 
 const versionApiUrl = "https://api.github.com/repos/SagerNet/sing-box/releases/latest"
 const downloadBaseUrl = "https://github.com/SagerNet/sing-box/releases/download"
-const downloadedPath = path.join(__dirname, "./sing-box.zip")
-const outputPath = path.join(__dirname, "./sing-box-core")
+const downloadedPath = path.join(app.getPath('home'), "./sing-box.zip")
+const outputPath = path.join(app.getPath('home'), "./sing-box-core")
 
 const finalPath = path.join(app.getPath('home'), "sing-box.exe")
 
@@ -18,7 +18,7 @@ function isInstalled() {
 
 
 function install() {
-  if (isInstalled) {
+  if (isInstalled()) {
     console.log("sing-box is already installed!")
     return
   }
