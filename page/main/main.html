@@ -204,6 +204,21 @@
   })
 
 
+  window.api.confStatus((event, ok, status) => {
+    if (!ok){
+      alert(status)
+    }else {
+      alert(status)
+    }
+  })
+
+  window.api.confSet((event, authServer, whoamiServer, dohServer, token) => {
+    document.getElementById('auth_server').value = authServer
+    document.getElementById('whoami_server').value = whoamiServer
+    document.getElementById('doh_server').value = dohServer
+    document.getElementById('token').value = token
+  })
+
   function onParseLink() {
     if (document.getElementById('share_link').value?.split('@#@').length === 4) {
       [
@@ -228,7 +243,7 @@
       return;
     }
 
-    window.api.submitData({authServer, whoamiServer, dohServer, token})
+    window.api.submitConf({authServer, whoamiServer, dohServer, token})
   }
 </script>
 

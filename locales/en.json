@@ -11,5 +11,9 @@
   "dohServer": "DOH Server",
   "token": "Token",
   "submit": "Submit",
-  "parseLink": "Parse Link"
+  "parseLink": "Parse Link",
+  "whoamiServerIsWrong": "Whoami Server is not valid!",
+  "authServerIsWrong": "Auth Server is not valid!",
+  "tokenIsWrong": "Token is not authorized!",
+  "confSaved": "your settings are correct and have been saved"
 }

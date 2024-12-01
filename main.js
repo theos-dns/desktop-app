@@ -9,7 +9,11 @@ const Ini = require("ini")
 const {getCores} = require("./utils");
 const os = require('os');
 const tunCoreInstall = require("./tun/installCore")
-const {STORE_TUN_CORE} = require("./consts");
+const {STORE_TUN_CORE, STORE_CONF_AUTH_SERVER, STORE_CONF_DOH_SERVER, STORE_CONF_WHOAMI_SERVER,
+  STORE_CONF_TOKEN
+} = require("./consts");
+const axios = require("axios");
+const {isIP} = require("net");
 
 log.initialize();
 log.info('start logging...');
@@ -163,6 +167,34 @@ const setSettings = () => {
 
   // tun core:
   mainWindow.webContents.send('main:tunCoreSelectedStatus', store.get(STORE_TUN_CORE, "NOT_SET"));
+
+  // conf:
+  mainWindow.webContents.send(
+    'main:confSet',
+    store.get(STORE_CONF_AUTH_SERVER),
+    store.get(STORE_CONF_WHOAMI_SERVER),
+    store.get(STORE_CONF_DOH_SERVER),
+    store.get(STORE_CONF_TOKEN),
+    );
+}
+
+const authorizeIp = async (authServer, token, ip) =>{
+  const url = `http://${authServer}/tap-in`
+
+  try {
+    const res = await axios.get(url, {params:{token, ip}})
+    if(res.data === "added" || res.data === "already added"){
+      return {ok: true, code: 200, status: res.data}
+    }
+  }catch (error) {
+    if (error.response && error.response.status === 401) {
+      return {ok: false, code: 401, status:"unauthorized"}
+    }
+    console.log(error)
+    return {ok: false, code: 0, status:"auth server is not correct"}
+  }
+
+  return {ok: false, code: -1, status:"default"}
 }
 
 
@@ -191,7 +223,44 @@ ipcMain.on("main:selectCore", async (event, {core}) => {
 })
 
 
+ipcMain.on("main:submitConf", async (event, { authServer, whoamiServer, dohServer, token }) => {
+  let whoamiTest
+  try {
+    whoamiTest = await axios.get(`http://${whoamiServer}`)
+    const ipVersion = isIP(whoamiTest.data)
+    if(ipVersion === 0){
+      throw new Error('whoami server is not correct');
+    }
+  }catch (e) {
+    console.log(e)
+    mainWindow.webContents.send("main:confStatus", false, i18n.__("whoamiServerIsWrong"))
+    return;
+  }
 
+  const res = await authorizeIp(authServer, token, whoamiTest.data)
+
+  if(!res.ok && res.code === 401){
+    mainWindow.webContents.send("main:confStatus", false, i18n.__("tokenIsWrong"))
+    return;
+  }
+
+  if(!res.ok && res.code === 0){
+    mainWindow.webContents.send("main:confStatus", false, i18n.__("authServerIsWrong"))
+    return;
+  }
+
+  if(!res.ok && res.code < 0){
+    mainWindow.webContents.send("main:confStatus", false, res.status)
+    return;
+  }
+
+  store.set(STORE_CONF_AUTH_SERVER, authServer);
+  store.set(STORE_CONF_DOH_SERVER, dohServer);
+  store.set(STORE_CONF_WHOAMI_SERVER, whoamiServer);
+  store.set(STORE_CONF_TOKEN, token);
+
+  mainWindow.webContents.send("main:confStatus", true, i18n.__("confSaved"))
+})
 
 
 // const genSingBoxConf = function () {
