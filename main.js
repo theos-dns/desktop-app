@@ -6,9 +6,10 @@ const Store = require("electron-store")
 const {autoUpdater} = require("electron-updater")
 const { I18n } = require('i18n')
 const Ini = require("ini")
-const {getCores} = require("./utils");
-const os = require('os');
+const {getCores, platform} = require("./utils");
 const tunCoreInstall = require("./tun/installCore")
+const tunCoreStart = require("./tun/startCore")
+const tunCoreStop = require("./tun/stopCore")
 const {STORE_TUN_CORE, STORE_CONF_AUTH_SERVER, STORE_CONF_DOH_SERVER, STORE_CONF_WHOAMI_SERVER,
   STORE_CONF_TOKEN
 } = require("./consts");
@@ -48,7 +49,6 @@ if (!gotTheLock) {
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore()
       mainWindow.focus()
-      mainWindow.maximize()
     }
   })
 
@@ -93,7 +93,6 @@ async function createMainWindow() {
   if (mainWindow !== null) {
     mainWindow.restore();
     mainWindow.show()
-    mainWindow.maximize()
     return
   }
   mainWindow = new BrowserWindow({
@@ -123,14 +122,14 @@ async function createMainWindow() {
         telUrl: CONFIGS.tel_channel.url
       }
     }).then(async ()=>{
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
 
     // send lang data to page
     mainWindow.webContents.send('main:i18nJson', i18n.getCatalog(i18n.getLocale()));
 
     // send cores list to page
     const cores = await getCores()
-    mainWindow.webContents.send('main:tunCores', cores)
+    mainWindow.webContents.send('main:getCores', cores)
 
 
     setSettings()
@@ -166,7 +165,7 @@ const closeApp = () => {
 const setSettings = () => {
 
   // tun core:
-  mainWindow.webContents.send('main:tunCoreSelectedStatus', store.get(STORE_TUN_CORE, "NOT_SET"));
+  mainWindow.webContents.send('main:coreStatus', store.get(STORE_TUN_CORE, ""), false, false, "");
 
   // conf:
   mainWindow.webContents.send(
@@ -200,24 +199,17 @@ const authorizeIp = async (authServer, token, ip) =>{
 
 // ------------------- ipc messages ------------------------
 ipcMain.on("main:selectCore", async (event, {core}) => {
-  let sys = os.platform();
-  if (sys === "darwin") {
-    sys = "macOS"
-  } else if (sys === "win32") {
-    sys = "windows"
-  } else if (sys === "linux") {
-    sys = "linux"
-  }
+  const p = platform()
 
-  const result = tunCoreInstall(core, sys)
+  const result = tunCoreInstall(core, p)
   if (result.isInstalled){
     console.log("core is installed")
-    mainWindow.webContents.send('main:tunCoreSelectedStatus', core);
+    mainWindow.webContents.send('main:coreStatus', core, false, false, "");
     store.set(STORE_TUN_CORE, core);
   }
   if (result.isInstalling){
     console.log("core is installing...")
-    mainWindow.webContents.send('main:tunCoreSelectedStatus', "installing");
+    mainWindow.webContents.send('main:coreStatus', "", true, false, i18n.__("installingCore"));
   }
 
 })
@@ -263,18 +255,31 @@ ipcMain.on("main:submitConf", async (event, { authServer, whoamiServer, dohServe
 })
 
 
-// const genSingBoxConf = function () {
-//   fs.readFile("./tun/sing-box/config-template.json", (err, data) => {
-//     if (!!err && !!err.code) {
-//       console.error(err.code, err.message)
-//     }
-//     if (!!data.length > 0) {
-//       const newData = data.toString().replaceAll("{$DOH_SERVER}", "aaaa")
-//       fs.writeFile("./tun/sing-box/config.json", newData, (e) => {
-//         if (!!e && !!e.code) {
-//           console.error(e.code, e.message)
-//         }
-//       })
-//     }
-//   })
-// }
+ipcMain.on("main:startCore", () => {
+  const doh = store.get(STORE_CONF_DOH_SERVER, "")
+  const core = store.get(STORE_TUN_CORE, "")
+  if(doh.length < 3){
+    mainWindow.webContents.send("main:confStatus", false, i18n.__("dohIsWrong"))
+    return;
+  }
+  if(core.length < 2){
+    mainWindow.webContents.send("main:confStatus", false, i18n.__("coreNotSelected"))
+    return;
+  }
+  const p = platform()
+  tunCoreStart(doh, core, p)
+
+  mainWindow.webContents.send('main:coreStatus', core, false, true, "");
+})
+
+ipcMain.on("main:stopCore", () => {
+  const core = store.get(STORE_TUN_CORE, "")
+  if(core.length < 2){
+    mainWindow.webContents.send("main:confStatus", false, i18n.__("coreNotSelected"))
+    return;
+  }
+  const p = platform()
+  tunCoreStop(core, p)
+
+  mainWindow.webContents.send('main:coreStatus', core, false, false, "");
+})

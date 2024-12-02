@@ -6,6 +6,7 @@
   "selectCore": "Selecting core",
   "installingCore": "Installing core, Please wait...",
   "shareLink": "Share Link",
+  "copyShareLink": "Copy Share Link",
   "authServer": "Auth Server",
   "whoamiServer": "Whoami Server",
   "dohServer": "DOH Server",
@@ -15,5 +16,9 @@
   "whoamiServerIsWrong": "Whoami Server is not valid!",
   "authServerIsWrong": "Auth Server is not valid!",
   "tokenIsWrong": "Token is not authorized!",
-  "confSaved": "your settings are correct and have been saved"
+  "dohIsWrong": "DOH Server is not valid!",
+  "coreNotSelected": "tun-core ins not selected!",
+  "confSaved": "your settings are correct and have been saved",
+  "start": "Start",
+  "stop": "Stop"
 }

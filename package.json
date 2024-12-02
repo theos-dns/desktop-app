@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron --trace-warnings .  ",
+    "start": "electron .",
     "build": "electron-builder build -c electron-builder.yml -w -l"
   },
   "author": "Theos Org",
@@ -25,6 +25,7 @@
     "electron-updater": "^6.3.9",
     "extract-zip": "^2.0.1",
     "i18n": "^0.15.1",
-    "ini": "^5.0.0"
+    "ini": "^5.0.0",
+    "sudo-prompt": "^9.2.1"
   }
 }

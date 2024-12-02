@@ -40,22 +40,6 @@
       margin-bottom: 10px;
     }
 
-    .button {
-      display: block;
-      width: 200px;
-      height: 3rem;
-      background-color: #F3A423;
-      border: none;
-      color: white;
-      padding: 13px 30px;
-      text-decoration: none;
-      font-size: 1rem;
-      /*margin: 0 auto 35px;*/
-      cursor: pointer;
-      border-radius: 4px;
-
-    }
-
     input[type=text] {
       border: 2px solid #aaa;
       border-radius: 4px;
@@ -141,7 +125,10 @@
       <label for='share_link'><i18n>shareLink</i18n>:</label>
       <input id='share_link' type='text'>
     </div>
-    <button class='button' onclick='onParseLink()'><i18n>parseLink</i18n></button>
+    <div class="flex-row d-flex align-items-center">
+      <button class="btn btn-outline-info btn-lg mx-4" onclick='onParseLink()'><i18n>parseLink</i18n></button>
+      <button class="btn btn-outline-secondary btn-lg" onclick='onCopyShareLink()'><i18n>copyShareLink</i18n></button>
+    </div>
   </section>
 
   <section>
@@ -168,16 +155,17 @@
     </div>
   </section>
 </div>
-<button class='button' onclick='onSubmit()'><i18n>submit</i18n></button>
+
+<div class="flex-row d-flex align-items-center justify-content-between w-75">
+  <button style="width: 200px" class='btn btn-primary btn-lg' onclick='onSubmitConf()'><i18n>submit</i18n></button>
+
+  <button style="width: 200px" id="start_btn" disabled class='btn btn-success btn-lg' onclick='onStartCore()'><i18n>start</i18n></button>
+  <button style="width: 200px; display: none" id="stop_btn" class='btn btn-danger btn-lg' onclick='onStopCore()'><i18n>stop</i18n></button>
+</div>
 
 
 <script>
-  function onSelectCore() {
-    window.api.selectCore({core: this.innerText})
-  }
-
-
-  window.api.tunCores((event, cores) => {
+  window.api.getCores((event, cores) => {
     const list = []
     for (const core of cores) {
       const a = document.createElement("a")
@@ -192,31 +180,38 @@
     document.getElementById("cores_list").replaceChildren(...list)
   })
 
-  window.api.tunCoreSelectedStatus((event, status) => {
-    if (status === "NOT_SET"){
-      console.log("core not set")
-    }else if(status === "installing"){
-      document.getElementById("core_installing").style.display = "block"
-    } else{
-      document.getElementById("core_selected").innerHTML = status
+  window.api.getCoreStatus((event, coreName, isInstalling, isStarted, message) => {
+    if (coreName.length > 0){
+      document.getElementById("core_selected").innerHTML = coreName
       document.getElementById("core_installing").style.display = "none"
     }
+
+    if(isInstalling){
+      document.getElementById("core_installing").style.display = "block"
+    }
+
+    if(isStarted){
+      document.getElementById("start_btn").style.display = "none"
+      document.getElementById("stop_btn").style.display = "block"
+    }else {
+      document.getElementById("start_btn").style.display = "block"
+      document.getElementById("stop_btn").style.display = "none"
+    }
+
   })
 
 
   window.api.confStatus((event, ok, status) => {
-    if (!ok){
-      alert(status)
-    }else {
-      alert(status)
-    }
+    document.getElementById("start_btn").disabled = !ok;
+    alert(status)
   })
 
   window.api.confSet((event, authServer, whoamiServer, dohServer, token) => {
-    document.getElementById('auth_server').value = authServer
-    document.getElementById('whoami_server').value = whoamiServer
-    document.getElementById('doh_server').value = dohServer
-    document.getElementById('token').value = token
+    if(!!authServer) document.getElementById('auth_server').value = authServer
+    if(!!whoamiServer) document.getElementById('whoami_server').value = whoamiServer
+    if(!!dohServer) document.getElementById('doh_server').value = dohServer
+    if(!!token) document.getElementById('token').value = token
+    if(!!token && !!dohServer && !!whoamiServer && !!authServer) document.getElementById("start_btn").disabled= false
   })
 
   function onParseLink() {
@@ -232,7 +227,16 @@
     }
   }
 
-  function onSubmit() {
+  function onCopyShareLink() {
+    let result = [document.getElementById('auth_server').value, document.getElementById('whoami_server').value, document.getElementById('doh_server').value, document.getElementById('token').value]
+    result = result.join('@#@')
+
+    document.getElementById('share_link').value = result
+
+    copyToClipboard(result)
+  }
+
+  function onSubmitConf() {
     const authServer = document.getElementById('auth_server').value
     const whoamiServer = document.getElementById('whoami_server').value
     const dohServer = document.getElementById('doh_server').value
@@ -245,6 +249,19 @@
 
     window.api.submitConf({authServer, whoamiServer, dohServer, token})
   }
+
+  function onSelectCore() {
+    window.api.sendSelectCore({core: this.innerText})
+  }
+
+  function onStartCore() {
+    window.api.sendStartCore()
+  }
+
+  function onStopCore() {
+    window.api.sendStopCore()
+  }
+
 </script>
 
 
@@ -258,6 +275,35 @@
   })
 </script>
 
+
+<script>
+
+  function copyToClipboard(text) {
+    if (window.clipboardData && window.clipboardData.setData) {
+      // Internet Explorer-specific code path to prevent textarea being shown while dialog is visible.
+      return window.clipboardData.setData("Text", text);
+
+    }
+    else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+      let textarea = document.createElement("textarea");
+      textarea.textContent = text;
+      textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in Microsoft Edge.
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        return document.execCommand("copy");  // Security exception may be thrown by some browsers.
+      }
+      catch (ex) {
+        console.warn("Copy to clipboard failed.", ex);
+        return prompt("Copy to clipboard: Ctrl+C, Enter", text);
+      }
+      finally {
+        document.body.removeChild(textarea);
+      }
+    }
+  }
+
+</script>
 
 </body>
 </html>
