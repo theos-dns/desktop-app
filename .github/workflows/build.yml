@@ -13,6 +13,13 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
+        include:
+          - os: macos-latest
+            args: "-c electron-builder.yml -m"
+          - os: ubuntu-latest
+            args: "-c electron-builder.yml -l"
+          - os: windows-latest
+            args: "-c electron-builder.yml -w"
 
     steps:
       - name: Check out Git repository
@@ -29,7 +36,7 @@ jobs:
           github_token: ${{ secrets.github_token }}
 #          skip_build: true
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
-          args: -c electron-builder.yml
+          args: ${{ matrix.os.args }}
 
 #      - name: Install Snapcraft
 #        uses: samuelmeuli/action-snapcraft@v3
