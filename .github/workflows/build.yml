@@ -1,9 +1,9 @@
 name: Build/release
 
 on:
-  push:
-    paths:
-      - '.github/**'
+#  push:
+#    paths:
+#      - '.github/**'
   workflow_dispatch:
 
 jobs:
