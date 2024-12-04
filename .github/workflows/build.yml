@@ -38,5 +38,6 @@ jobs:
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
           args: ${{ matrix.os.args }}
 
+
 #      - name: Install Snapcraft
 #        uses: samuelmeuli/action-snapcraft@v3
