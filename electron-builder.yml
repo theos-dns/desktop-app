@@ -152,6 +152,13 @@ snap:
   allowNativeWayland: true
   title: "Theos DNS"
 
+rpm:
+  afterInstall: null
+  afterRemove: null
+  category: "Network"
+  icon: assets/icon.ico
+  maintainer: "Theos DNS org"
+  packageName: "theos-dns"
 
 publish:
   provider: generic

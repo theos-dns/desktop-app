@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest] # macos-latest,
         include:
           - os: macos-latest
             args: "-c electron-builder.yml -m"
@@ -24,6 +24,10 @@ jobs:
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v1
+
+      - name: Install apt-gets
+        run: sudo apt-get install -y libarchive-tools rpm gcc-multilib g++-multilib snapcraft
+        if: matrix.os == 'ubuntu-latest'
 
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v1
@@ -78,33 +82,34 @@ jobs:
             dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-windows-nsis.exe
             dist/latest.yml
 
-#      release mac
-      - name: Release MacOs
-        uses: softprops/action-gh-release@v2
-        if: matrix.os == 'macos-latest'
-        with:
-          files: |
-            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-macos-arm64.dmg
-            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-macos-arm64.zip
-            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-macos-x64.dmg
-            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-macos-x64.zip
-            dist/latest-mac.yml
-
 #      release linux
       - name: Release Linux
         uses: softprops/action-gh-release@v2
         if: matrix.os == 'ubuntu-latest'
         with:
           files: |
-            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-linux-amd64.deb
             dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-linux-arm64.AppImage
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-linux-x86_64.AppImage
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-linux-amd64.deb
             dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-linux-arm64.deb
             dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-linux-arm64.tar.gz
             dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-linux-x64.tar.gz
-            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-linux-x86_64.AppImage
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-linux-aarch64.rpm
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-linux-x86_64.rpm
             dist/latest-linux-arm64.yml
             dist/latest-linux.yml
 
+##      release mac
+#      - name: Release MacOs
+#        uses: softprops/action-gh-release@v2
+#        if: matrix.os == 'macos-latest'
+#        with:
+#          files: |
+#            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-macos-arm64.dmg
+#            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-macos-arm64.zip
+#            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-macos-x64.dmg
+#            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-macos-x64.zip
+#            dist/latest-mac.yml
 
 
 #      - name: Install Snapcraft
