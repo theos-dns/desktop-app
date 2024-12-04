@@ -1,9 +1,9 @@
 name: Build/release
 
 on:
-#  push:
-#    paths:
-#      - '.github/**'
+  push:
+    paths:
+      - '.github/**'
   workflow_dispatch:
 
 jobs:
@@ -29,7 +29,7 @@ jobs:
           github_token: ${{ secrets.github_token }}
           skip_build: true
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
-          args: -c electron-builder.yml -w -l -m
+          args: -c electron-builder.yml
 
 #      - name: Install Snapcraft
 #        uses: samuelmeuli/action-snapcraft@v3
