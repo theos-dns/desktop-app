@@ -38,6 +38,18 @@ jobs:
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
           args: ${{ matrix.os.args }}
 
+      - name: ls -la
+        run: ls -la
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+      - name: ls -la
+        run: ls -la dist
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
 
+      - name: ls -la
+        run: dir
+        if: matrix.os == 'windows-latest
+      - name: ls -la
+        run: dir dist
+        if: matrix.os == 'windows-latest'
 #      - name: Install Snapcraft
 #        uses: samuelmeuli/action-snapcraft@v3
