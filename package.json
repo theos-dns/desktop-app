@@ -1,14 +1,15 @@
 {
   "name": "theos-desktop-app",
-  "version": "1.0.0",
-  "description": "Theos",
+  "productName": "theos-desktop-app",
+  "version": "1.0.1",
+  "description": "Theos Dns, A DNS app that bypasses sanctions or blocked domains for unrestricted access.",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
     "build": "electron-builder build -c electron-builder.yml -w -l"
   },
-  "author": "Theos Org",
+  "author": "Theos Org <nomail@email.com>",
   "license": "ISC",
   "engines": {
     "node": "=16.17.1",
