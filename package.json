@@ -1,7 +1,7 @@
 {
   "name": "theos-desktop-app",
   "productName": "theos-desktop-app",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Theos Dns, A DNS app that bypasses sanctions or blocked domains for unrestricted access.",
   "main": "main.js",
   "scripts": {

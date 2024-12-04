@@ -14,12 +14,12 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest] # macos-latest,
         include:
-          - os: macos-latest
-            args: "-c electron-builder.yml -m"
           - os: ubuntu-latest
             args: "-c electron-builder.yml -l"
           - os: windows-latest
             args: "-c electron-builder.yml -w"
+#          - os: macos-latest
+#            args: "-c electron-builder.yml -m"
 
     steps:
       - name: Check out Git repository
@@ -54,21 +54,21 @@ jobs:
             core.setOutput('tag', tag)
             core.setOutput('no-v', no_v)
             core.setOutput('no-dash', no_dash)
-
-      - name: ls -la
-        run: ls -la
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
-      - name: ls -la
-        run: ls -la dist
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
-
-      - name: ls -la
-        run: dir
-        if: matrix.os == 'windows-latest'
-      - name: ls -la
-        run: dir dist
-        if: matrix.os == 'windows-latest'
-
+#
+#      - name: ls -la
+#        run: ls -la
+#        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+#      - name: ls -la
+#        run: ls -la dist
+#        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+#
+#      - name: ls -la
+#        run: dir
+#        if: matrix.os == 'windows-latest'
+#      - name: ls -la
+#        run: dir dist
+#        if: matrix.os == 'windows-latest'
+#
 
 
 #      release win
