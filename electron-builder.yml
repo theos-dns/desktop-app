@@ -10,7 +10,7 @@ directories:
 asarUnpack: ["**/*.+(node|dll|exe|wav)", "**/tun/**/*", "assets/*"]
 
 win:
-  artifactName: ${productName}-Setup-${version}-${arch}.${ext}
+  artifactName: ${productName}-Setup-${version}-windows-${arch}.${ext}
   icon: assets/icon.ico
   target: [
     {
@@ -33,7 +33,7 @@ win:
 
 
 linux:
-  artifactName: ${productName}-Setup-${version}-${arch}.${ext}
+  artifactName: ${productName}-Setup-${version}-linux-${arch}.${ext}
   category: "Network"
   icon: assets/icon.png
   desktop:
@@ -46,13 +46,13 @@ linux:
        "arm64"
      ]
     },
-#    {
-#     "target": "rpm",
-#     "arch": [
-#       "x64",
-#       "arm64"
-#     ]
-#    },
+    {
+     "target": "rpm",
+     "arch": [
+       "x64",
+       "arm64"
+     ]
+    },
     {
      "target": "tar.gz",
      "arch": [
@@ -67,19 +67,19 @@ linux:
        "arm64"
      ]
     },
-#    {
-#     "target": "snap",
-#     "arch": [
-#       "x64",
-#       "arm64"
-#     ]
-#    }
+    {
+     "target": "snap",
+     "arch": [
+       "x64",
+       "arm64"
+     ]
+    }
   ]
 
 
 mac:
   appId: "com.theos-app.app"
-  artifactName: ${productName}-Setup-${version}-${arch}.${ext}
+  artifactName: ${productName}-Setup-${version}-macos-${arch}.${ext}
   category: "public.app-category.utilities"
   icon: assets/icon-512x512.png
   target: [
@@ -118,6 +118,7 @@ files:
   ]
 
 nsis:
+  artifactName: ${productName}-Setup-${version}-windows-${arch}-nsis.${ext}
   oneClick: true
   installerIcon: assets/icon.ico
   installerHeaderIcon: assets/icon.ico
@@ -125,26 +126,27 @@ nsis:
 
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: "Theos"
+  shortcutName: "Theos DNS"
 
   runAfterFinish: true
 
   deleteAppDataOnUninstall: true
 
 
-nsisWeb:
-  oneClick: true
-  installerIcon: assets/icon.ico
-  installerHeaderIcon: assets/icon.ico
-  uninstallerIcon: assets/icon.ico
-
-  createDesktopShortcut: true
-  createStartMenuShortcut: true
-  shortcutName: "Theos"
-
-  runAfterFinish: true
-
-  deleteAppDataOnUninstall: true
+#nsisWeb:
+#  artifactName: ${productName}-Setup-${version}-${arch}-nsisWeb.${ext}
+#  oneClick: true
+#  installerIcon: assets/icon.ico
+#  installerHeaderIcon: assets/icon.ico
+#  uninstallerIcon: assets/icon.ico
+#
+#  createDesktopShortcut: true
+#  createStartMenuShortcut: true
+#  shortcutName: "Theos DNS"
+#
+#  runAfterFinish: true
+#
+#  deleteAppDataOnUninstall: true
 
 snap:
   allowNativeWayland: true

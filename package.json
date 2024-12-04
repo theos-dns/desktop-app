@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
-    "build": "electron-builder build -c electron-builder.yml -w -l"
+    "build": "electron-builder build -c electron-builder.yml -w"
   },
   "author": "Theos Org <nomail@email.com>",
   "license": "ISC",

@@ -2,9 +2,9 @@ name: Build/release
 
 on:
   push:
-    paths:
-      - '.github/**'
-  workflow_dispatch:
+    tags:
+      - "v*.*.*"
+#  workflow_dispatch:
 
 jobs:
   release:
@@ -30,13 +30,69 @@ jobs:
         with:
           node-version: 16.17.1
 
-      - name: Build/release Electron app
+      - name: Build Electron app
         uses: samuelmeuli/action-electron-builder@v1
         with:
           github_token: ${{ secrets.github_token }}
           skip_build: true
-          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+#          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
           args: ${{ matrix.os.args }}
+
+      - name: Set Versions
+        uses: actions/github-script@v4
+        id: set_version
+        with:
+          script: |
+            const tag = context.ref.substring(10)
+            const no_v = tag.replace('v', '')
+            const dash_index = no_v.lastIndexOf('-')
+            const no_dash = (dash_index > -1) ?  no_v.substring(0, dash_index) : no_v
+            core.setOutput('tag', tag)
+            core.setOutput('no-v', no_v)
+            core.setOutput('no-dash', no_dash)
+
+#      release win
+      - name: Release windows
+        uses: softprops/action-gh-release@v2
+        if: matrix.os == 'windows-latest'
+        with:
+          files: |
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-windows-ia32-nsis.exe
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-windows-x64-nsis.exe
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-windows-nsis.exe
+            dist/latest.yml
+
+#      release mac
+      - name: Release MacOs
+        uses: softprops/action-gh-release@v2
+        if: matrix.os == 'macos-latest'
+        with:
+          files: |
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-macos-arm64.dmg
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-macos-arm64.zip
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-macos-x64.dmg
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-macos-x64.zip
+            dist/latest-mac.yml
+
+#      release linux
+      - name: Release Linux
+        uses: softprops/action-gh-release@v2
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          files: |
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-linux-amd64.deb
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-linux-arm64.AppImage
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-linux-arm64.deb
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-linux-arm64.tar.gz
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-linux-x64.tar.gz
+            dist/Theos-Setup-${{steps.set_version.outputs.no-v}}-linux-x86_64.AppImage
+            dist/latest-linux-arm64.yml
+            dist/latest-linux.yml
+
+
+
+#      - name: Install Snapcraft
+#        uses: samuelmeuli/action-snapcraft@v3
 
       - name: ls -la
         run: ls -la
@@ -51,5 +107,3 @@ jobs:
       - name: ls -la
         run: dir dist
         if: matrix.os == 'windows-latest'
-#      - name: Install Snapcraft
-#        uses: samuelmeuli/action-snapcraft@v3
