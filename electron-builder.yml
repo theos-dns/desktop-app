@@ -81,7 +81,7 @@ mac:
   appId: "com.theos-app.app"
   artifactName: ${productName}-Setup-${version}-${arch}.${ext}
   category: "public.app-category.utilities"
-  icon: assets/icon.png
+  icon: assets/icon-512x512.png
   target: [
     {
       "target": "dmg",
