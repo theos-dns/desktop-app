@@ -51,6 +51,22 @@ jobs:
             core.setOutput('no-v', no_v)
             core.setOutput('no-dash', no_dash)
 
+      - name: ls -la
+        run: ls -la
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+      - name: ls -la
+        run: ls -la dist
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+
+      - name: ls -la
+        run: dir
+        if: matrix.os == 'windows-latest'
+      - name: ls -la
+        run: dir dist
+        if: matrix.os == 'windows-latest'
+
+
+
 #      release win
       - name: Release windows
         uses: softprops/action-gh-release@v2
@@ -94,16 +110,3 @@ jobs:
 #      - name: Install Snapcraft
 #        uses: samuelmeuli/action-snapcraft@v3
 
-      - name: ls -la
-        run: ls -la
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
-      - name: ls -la
-        run: ls -la dist
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
-
-      - name: ls -la
-        run: dir
-        if: matrix.os == 'windows-latest'
-      - name: ls -la
-        run: dir dist
-        if: matrix.os == 'windows-latest'
