@@ -47,7 +47,7 @@ jobs:
 
       - name: ls -la
         run: dir
-        if: matrix.os == 'windows-latest
+        if: matrix.os == 'windows-latest'
       - name: ls -la
         run: dir dist
         if: matrix.os == 'windows-latest'
