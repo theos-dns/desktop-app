@@ -7,7 +7,7 @@ artifactName: ${name}-${version}-${os}-${arch}.${ext}
 directories:
   buildResources: "/"
 
-asarUnpack: ["**/*.+(node|dll|exe|wav)", "**/tun/**/*", "assets/*"]
+asarUnpack: ["**/*.+(node|dll|exe|wav)", "**/tun/**/*", "assets/*","*.+(ini)"]
 
 win:
   artifactName: ${productName}-Setup-${version}-windows-${arch}.${ext}

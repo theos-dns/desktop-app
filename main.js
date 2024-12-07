@@ -148,7 +148,11 @@ async function createMainWindow() {
 app.on('activate', async function () {
 
   // load ini configs
-  let configIniText = await fs.readFile(path.join(__dirname, 'config.ini'),{encoding : 'utf-8'})
+  let iniPath = path.join(__dirname, 'config.ini')
+  if(app.isPackaged){
+    iniPath = path.join(__dirname, "../app.asar.unpacked/config.ini");
+  }
+  let configIniText = await fs.readFile(iniPath,{encoding : 'utf-8'})
   CONFIGS = Ini.parse(configIniText)
   console.log(CONFIGS);
 
