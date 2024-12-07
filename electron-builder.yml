@@ -1,5 +1,9 @@
 # sudo apt-get libarchive-tools rpm gcc-multilib g++-multilib snapcraft
 
+# to build in ci/cd:
+# git commit -am "v100.0.100 blah blah" && git tag v100.0.100
+# git push && git push --tags
+
 appId: "com.theos-app.app"
 productName: Theos
 artifactName: ${name}-${version}-${os}-${arch}.${ext}
