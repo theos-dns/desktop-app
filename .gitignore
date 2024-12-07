@@ -6,6 +6,6 @@
 
 #configs
 *.env
-*.ini
+#*.ini
 
 /tun/**/config.json
